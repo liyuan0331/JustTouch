@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class OtherPlayer : Player {
-	public bool isEarnMoneyPerT=true;
+	//public bool isEarnMoneyPerT=true;
 
 	protected Rigidbody2D  parentRig2D{get;private set; }
 
@@ -32,12 +32,12 @@ public class OtherPlayer : Player {
 
 		moveRig2D =  parentRig2D;
 
-		if (isEarnMoneyPerT) {
-			earnMoneyT = Random.Range (fastT, slowT);
-			earnedMoneyPerT = workForMoneyRate * earnMoneyT;
-			workForMoneyRate = 0;
-			dT = Random.Range (0, slowT);
-		}
+		//if (isEarnMoneyPerT) {
+		//	earnMoneyT = Random.Range (fastT, slowT);
+		//	earnedMoneyPerT = workForMoneyRate * earnMoneyT;
+		//	workForMoneyRate = 0;
+		//	dT = Random.Range (0, slowT);
+		//}
 	}
 
 	protected override void Update(){
@@ -46,16 +46,16 @@ public class OtherPlayer : Player {
 		if (isDead)
 			return;
 		
-		if (isEarnMoneyPerT) {
-			//努力赚钱
-			dT += Time.deltaTime;
-			if (dT >= earnMoneyT) {
-				dT -= earnMoneyT;
-				//if (!this.GetComponentInChildren<YaElement> ().Electrified) {//带电不能变大
-					MoneySystem.Instance.PlayerWorkEarnMoney (this, earnedMoneyPerT);
-				//}
-			}
-		}
+		//if (isEarnMoneyPerT) {
+		//	//努力赚钱
+		//	dT += Time.deltaTime;
+		//	if (dT >= earnMoneyT) {
+		//		dT -= earnMoneyT;
+		//		//if (!this.GetComponentInChildren<YaElement> ().Electrified) {//带电不能变大
+		//			MoneySystem.Instance.PlayerWorkEarnMoney (this, earnedMoneyPerT);
+		//		//}
+		//	}
+		//}
 
 //		if (Vector2.Distance ( parentRig2D.position, myRig2D.position) > .7f) {
 //			 parentRig2D.position = myRig2D.position;

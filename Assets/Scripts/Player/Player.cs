@@ -51,12 +51,12 @@ public class Player : MonoBehaviour {
 		if (isDead)
 			return;
 
-		//工作赚钱
-		if (workForMoneyRate > 0) {
-			//if (!this.GetComponentInChildren<YaElement> ().Electrified) {//带电不能变大
-				MoneySystem.Instance.PlayerWorkEarnMoney (this, workForMoneyRate * Time.deltaTime);
-			//}
-		}
+		////工作赚钱
+		//if (workForMoneyRate > 0) {
+		//	//if (!this.GetComponentInChildren<YaElement> ().Electrified) {//带电不能变大
+		//		MoneySystem.Instance.PlayerWorkEarnMoney (this, workForMoneyRate * Time.deltaTime);
+		//	//}
+		//}
 
 		//根据金钱量来更新自己圆形的大小
 		float natureMoneyS = natureMoney;
