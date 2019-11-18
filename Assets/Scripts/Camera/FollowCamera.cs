@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FollowCamera : MonoBehaviour {
+
 	public EdgeCollider2D edge;
 	public Transform target;
 
@@ -30,7 +31,9 @@ public class FollowCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		followPos.x = Mathf.Clamp (target.position.x, x0, x1);
+        //if (!GameUI.Instance.userControl)
+        //    return;
+        followPos.x = Mathf.Clamp (target.position.x, x0, x1);
 		followPos.y = Mathf.Clamp (target.position.y, y0, y1);
 
 		transform.position = Vector3.Lerp (transform.position, followPos, Time.deltaTime * smooth);

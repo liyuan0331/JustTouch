@@ -1,30 +1,84 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MePlayer : Player,IElementPlayer {
+public class MePlayer : Player {
 
 	protected MoveAcc maX;
 	protected MoveAcc maY;
 
-	void IElementPlayer.GetHurt(){
-//		print("hurt!");
-		//每次受伤使自己资产减少0.9
-		float outMoney = Mathf.Max (natureMoney + borrowMoney, .9f);//考虑一下减少资产是否可以使自己变为负数(目前设置的不能为负数)
-		MoneySystem.Instance.PlayerWorkEarnMoney (this, -outMoney);
-	}
+    protected float hurtMoney;//受一次伤害的血量
 
-	protected override void Awake ()
+    //	void IElementPlayer.GetHurt(){
+    ////		print("hurt!");
+    //		//每次受伤使自己资产减少0.9
+    //		float outMoney = Mathf.Max (natureMoney + borrowMoney, .9f);//考虑一下减少资产是否可以使自己变为负数(目前设置的不能为负数)
+    //		MoneySystem.Instance.PlayerWorkEarnMoney (this, -outMoney);
+    //	}
+
+    //void GetHurt(OtherPlayer otherPlayer)
+    //{
+    //    print("hurt!");
+
+
+    //}
+
+    void Attack(OtherPlayer otherPlayer)
+    {
+        otherPlayer.GetHurt();
+    }
+
+    OtherPlayer hurtingPlayer;
+    void GetHurt(OtherPlayer otherPlayer)
+    {
+        if (borrowMoney > 0) return;
+        hurtingPlayer = otherPlayer;
+
+        //自身减少部分
+        hurtMoney = natureMoney;
+        natureMoney -= hurtMoney;
+        borrowMoney += hurtMoney;
+        if (natureMoney < 0)
+        {
+            borrowMoney += natureMoney;
+            natureMoney = 0;
+        }
+
+        //对方借出部分
+        float getMoney = borrowMoney * 1f;
+        float realGetMoney = hurtingPlayer.ReduceMoney(getMoney);
+        borrowMoney += realGetMoney;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        OtherPlayer other = collision.transform.GetComponent<OtherPlayer>();
+        if (other != null&&other.borrowMoney<=0)
+        {
+            if (other.natureMoney > natureMoney)
+            {
+                GetHurt(other);
+            }
+            else
+            {
+                Attack(other);
+            }
+        }
+    }
+
+    protected override void Awake ()
 	{
 		base.Awake ();
 		maxSpeed = 1.9f;
 		maX = new MoveAcc (maxSpeed);
 		maY=new MoveAcc (maxSpeed);
-	}
+
+        hurtMoney = (natureMoney / hurtCount) * 1.2f;
+    }
 
 	//玩家死亡(GameOver)
 	public override void Die ()
 	{
-		base.Die ();
+		base.Die();
 		Invoke ("ShowGameOver", .6f);
 	}
 
@@ -42,7 +96,10 @@ public class MePlayer : Player,IElementPlayer {
 
 	protected override void FixedUpdate ()
 	{
-		float h= Input.GetAxisRaw ("Horizontal");
+        if (isDead || !GameUI.Instance.userControl)
+            return;
+
+        float h= Input.GetAxisRaw ("Horizontal");
 		float v=Input.GetAxisRaw ("Vertical");
 		Vector2 movement = new Vector2 (h, v);
 		movement.Normalize ();
@@ -61,29 +118,45 @@ public class MePlayer : Player,IElementPlayer {
 	// Update is called once per frame
 	protected override void Update ()
 	{
-		if (isDead)
+        base.Update();
+
+        if (isDead||!GameUI.Instance.userControl)
 			return;
 
-		//玩家按键工作赚钱
-		if (Input.GetKeyDown (KeyCode.K)) {
-			workForMoneyRate = .2f;
-		} else if (Input.GetKeyUp (KeyCode.K)) {
-			workForMoneyRate = 0;
-		} else if (Input.GetKey (KeyCode.K)) {
+        //还钱
+        if (borrowMoney > 0&& hurtingPlayer!=null)
+        {
+            float returnMoney = hurtMoney * borrowMoneyLossSpeed * Time.deltaTime;
+            borrowMoney -= returnMoney;
+            if (borrowMoney < 0)
+            {
+                returnMoney += borrowMoney;
+                borrowMoney = 0;
+            }
+            returnMoney *= .8f;//玩家只吸收80%
+            hurtingPlayer.IncreaseMoney(returnMoney);
+        }
 
-		}
-		else if (Input.GetKeyDown (KeyCode.J)) {
-			//if (!this.GetComponentInChildren<YaElement> ().Electrified) {//带电不能变大
-				MoneySystem.Instance.PlayerWorkEarnMoney (this, .06f);
-			//}
-//			MonoLogue.Instance.ShowThenHideMonlogue ("独白测试");
-		}
+        //		//玩家按键工作赚钱
+        //		if (Input.GetKeyDown (KeyCode.K)) {
+        //			workForMoneyRate = .2f;
+        //		} else if (Input.GetKeyUp (KeyCode.K)) {
+        //			workForMoneyRate = 0;
+        //		} else if (Input.GetKey (KeyCode.K)) {
 
-//		if (workForMoneyRate > 0) {
-//			MoneySystem.Instance.PlayerWorkEarnMoney (this, workForMoneyRate * Time.deltaTime);
-//		}
+        //		}
+        //		else if (Input.GetKeyDown (KeyCode.J)) {
+        //			//if (!this.GetComponentInChildren<YaElement> ().Electrified) {//带电不能变大
+        //				MoneySystem.Instance.PlayerWorkEarnMoney (this, .06f);
+        //			//}
+        ////			MonoLogue.Instance.ShowThenHideMonlogue ("独白测试");
+        //		}
 
-		base.Update ();
+        //		if (workForMoneyRate > 0) {
+        //			MoneySystem.Instance.PlayerWorkEarnMoney (this, workForMoneyRate * Time.deltaTime);
+        //		}
+
+        
 	}
 
 	//惯性系统

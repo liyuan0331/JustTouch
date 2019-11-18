@@ -1,0 +1,44 @@
+title: Level1
+tags: 
+colorID: 0
+position: 301,294
+---
+这里大家都是<color=blue>蓝色</color>啊。
+只要是<color=blue>蓝色</color>，就是我的好朋友。
+我要把我“分享”我的好朋友们，嘿嘿嘿...
+接近它们，蹭蹭它们就好。
+开始派对吧！
+===
+title: Level2
+tags: 
+colorID: 0
+position: 593,305
+---
+注意，注意！
+<color=red>红色</color>的可不是朋友，我们要远离它。
+等待时机，它们会变成<color=blue>朋友</color>的。
+===
+title: Level3
+tags: 
+colorID: 0
+position: 593,305
+---
+这里全是斑点
+即使是<color=blue>蓝色</color>，只要是斑点，就不是好朋友。
+斑点比较难缠，蹭的太多，很伤身体。
+咱们可得小心点。
+===
+title: END
+tags: 
+colorID: 0
+position: 593,305
+---
+<<move Girl>>
+你...
+是你，小花！
+你怎么在这?
+我怎么会变成这样?
+哦，我知道我来这里的目的了。
+我都想起来了...
+<<fin Girl>>
+===

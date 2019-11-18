@@ -4,19 +4,23 @@ using UnityEditor;
 
 [SelectionBase]
 public class Player : MonoBehaviour {
-//	Color natureMoneyColor = new Color (119, 145, 140) / 255f;
-//	Color borrowMoneyColor = new Color (173, 210, 203) / 255f;
-//	Color lentMoneyColor = new Color (220, 173, 83) / 255f;
+    //	Color natureMoneyColor = new Color (119, 145, 140) / 255f;
+    //	Color borrowMoneyColor = new Color (173, 210, 203) / 255f;
+    //	Color lentMoneyColor = new Color (220, 173, 83) / 255f;
 
-	public float natureMoney = .785f;
+    public float borrowPercent = 1;
+    public float borrowMoneyLossSpeed = 1f;//还款速度
+    public int hurtCount = 1;//受伤几次死亡
+
+    public float natureMoney = .785f;
 	public float borrowMoney = 0;	//从别人借入的money
-	public float lentMoney = 0;		//借出给别人的money
-	protected Rigidbody2D myRig2D{get;private set; }
-	protected Rigidbody2D moveRig2D{private get;set; }
+	public float lentMoney = 0;     //借出给别人的money
+    public Rigidbody2D myRig2D;
+    public Rigidbody2D moveRig2D;
 	protected float maxSpeed=4f;
 
-	Transform natureMoneyCircle;
-	Transform borrowMoneyCircle;
+	protected Transform natureMoneyCircle;
+    protected Transform borrowMoneyCircle;
 
 	/*这里去掉，改为下面将生活所需的工作与物品等价交换与金钱的工作抽离
 	//为了生活和其它消费话费金钱的速率 unit/s
@@ -29,7 +33,6 @@ public class Player : MonoBehaviour {
 
 	//是否死亡
 	protected bool isDead=false;
-
 
 	// Use this for initialization
 	protected virtual void Awake () {
@@ -50,6 +53,7 @@ public class Player : MonoBehaviour {
 	protected virtual void Update(){
 		if (isDead)
 			return;
+
 
 		////工作赚钱
 		//if (workForMoneyRate > 0) {
@@ -82,6 +86,7 @@ public class Player : MonoBehaviour {
 	}
 
 	protected virtual void FixedUpdate(){
+
 		if(myRig2D.bodyType!=RigidbodyType2D.Static){
 			myRig2D.velocity = Vector3.zero;//不需要惯性
 //			myRig2D.velocity=Vector3.Lerp(myRig2D.velocity,Vector3.zero,Time.deltaTime*15f);
@@ -97,6 +102,7 @@ public class Player : MonoBehaviour {
 
 	//Player向一个目标点移动,移动中返回true，如果到达目的地返回false
 	protected virtual bool PlayerMoveTowards(Vector2 goal){
+        if (!GameUI.Instance.userControl) return false;
 		if (isDead)
 			return true;
 
@@ -110,6 +116,8 @@ public class Player : MonoBehaviour {
 
 		return true;
 	}
+
+
 
 	//金额增多
 	public void IncreaseMoney(float dMoney){
@@ -135,7 +143,14 @@ public class Player : MonoBehaviour {
 	//破产
 	protected virtual void GoBankrupt(){
 		print (this.name + "破产");
-		this.gameObject.SetActive (false);
+        if (this as MePlayer)
+        {
+            this.gameObject.SetActive (false);
+        }
+        else
+        {
+            Destroy(this.transform.root.gameObject);
+        }
 		MoneySystem.Instance.CheckAllPlayer ();
 	}
 
